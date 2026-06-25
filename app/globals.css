@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+  background: #f9f9ff;
+  color: #121c2c;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.card-shadow {
+  box-shadow: 0 10px 25px rgba(45, 55, 72, 0.05);
+}
+
+.active-scale:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+.material-symbols-outlined {
+  direction: ltr;
+  display: inline-block;
+  font-family: "Material Symbols Outlined";
+  font-feature-settings: "liga";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  -webkit-font-smoothing: antialiased;
+}
