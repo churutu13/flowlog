@@ -1,4 +1,4 @@
-export type EventType = "water" | "urine" | "medication";
+export type EventType = "water" | "urine" | "urge" | "medication";
 export type UrineColor = "chiaro" | "giallo" | "scuro";
 export type MedicationFrequency = "giornaliera" | "al bisogno";
 
@@ -8,6 +8,7 @@ export type FlowEvent = {
   timestamp: string;
   amountMl?: number;
   urgency?: number;
+  streamStrength?: number;
   urineColor?: UrineColor;
   medicationId?: string;
   medicationName?: string;

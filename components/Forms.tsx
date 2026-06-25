@@ -8,17 +8,30 @@ const urineColors: UrineColor[] = ["chiaro", "giallo", "scuro"];
 
 export function WaterForm({ onSubmit }: { onSubmit: (amountMl: number) => void }) {
   const [amountMl, setAmountMl] = useState(250);
+  const safeAmountMl = Number.isFinite(amountMl) ? Math.max(1, Math.round(amountMl)) : 250;
 
   return (
     <form
       className="space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit(amountMl);
+        onSubmit(safeAmountMl);
       }}
     >
       <div>
         <label className="mb-3 block text-label-caps uppercase text-outline">Quantità</label>
+        <div className="mb-3 flex items-center gap-3">
+          <input
+            type="number"
+            min={1}
+            step={10}
+            value={amountMl}
+            onChange={(event) => setAmountMl(Number(event.target.value))}
+            className="h-14 w-32 rounded-full border-0 bg-surface-container-low px-5 text-center text-title-sm font-semibold text-primary focus:ring-2 focus:ring-primary-container"
+            aria-label="Quantità acqua in millilitri"
+          />
+          <span className="text-body-md text-on-surface-variant">ml</span>
+        </div>
         <div className="grid grid-cols-5 gap-2">
           {waterAmounts.map((amount) => (
             <button
@@ -42,11 +55,14 @@ export function WaterForm({ onSubmit }: { onSubmit: (amountMl: number) => void }
 }
 
 export function UrineForm({
-  onSubmit
+  onSubmit,
+  onUrge
 }: {
-  onSubmit: (values: { urgency?: number; urineColor?: UrineColor; notes?: string }) => void;
+  onSubmit: (values: { urgency?: number; streamStrength?: number; urineColor?: UrineColor; notes?: string }) => void;
+  onUrge: (values: { urgency?: number; notes?: string }) => void;
 }) {
   const [urgency, setUrgency] = useState(3);
+  const [streamStrength, setStreamStrength] = useState(3);
   const [urineColor, setUrineColor] = useState<UrineColor>("giallo");
   const [notes, setNotes] = useState("");
 
@@ -55,7 +71,7 @@ export function UrineForm({
       className="space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit({ urgency, urineColor, notes: notes.trim() || undefined });
+        onSubmit({ urgency, streamStrength, urineColor, notes: notes.trim() || undefined });
       }}
     >
       <div>
@@ -64,6 +80,22 @@ export function UrineForm({
         <div className="mt-1 flex justify-between text-label-caps text-outline">
           <span>1</span>
           <span className="font-semibold text-primary">{urgency}</span>
+          <span>5</span>
+        </div>
+      </div>
+      <div>
+        <label className="mb-3 block text-label-caps uppercase text-outline">Potenza getto</label>
+        <input
+          type="range"
+          min={1}
+          max={5}
+          value={streamStrength}
+          onChange={(event) => setStreamStrength(Number(event.target.value))}
+          className="w-full accent-secondary"
+        />
+        <div className="mt-1 flex justify-between text-label-caps text-outline">
+          <span>1</span>
+          <span className="font-semibold text-secondary">{streamStrength}</span>
           <span>5</span>
         </div>
       </div>
@@ -92,6 +124,13 @@ export function UrineForm({
       />
       <button type="submit" className="h-14 w-full rounded-full bg-secondary text-on-secondary font-semibold">
         Salva pipì
+      </button>
+      <button
+        type="button"
+        onClick={() => onUrge({ urgency, notes: notes.trim() || undefined })}
+        className="h-14 w-full rounded-full bg-secondary-container text-on-secondary-container font-semibold"
+      >
+        Mi scappa
       </button>
     </form>
   );

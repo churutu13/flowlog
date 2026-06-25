@@ -16,14 +16,24 @@ type DashboardProps = {
 function eventTitle(event: FlowEvent) {
   if (event.type === "water") return `${event.amountMl ?? 0} ml Acqua`;
   if (event.type === "urine") return "Pipì";
+  if (event.type === "urge") return "Mi scappa";
   return event.medicationName ?? "Farmaco";
 }
 
 function eventDetail(event: FlowEvent) {
   if (event.type === "water") return event.notes || "Idratazione";
   if (event.type === "urine") {
-    const parts = [event.urgency ? `Urgenza ${event.urgency}/5` : "", event.urineColor ? `Colore ${event.urineColor}` : "", event.notes ?? ""].filter(Boolean);
+    const parts = [
+      event.urgency ? `Urgenza ${event.urgency}/5` : "",
+      event.streamStrength ? `Getto ${event.streamStrength}/5` : "",
+      event.urineColor ? `Colore ${event.urineColor}` : "",
+      event.notes ?? ""
+    ].filter(Boolean);
     return parts.join(" - ") || "Registrazione minzione";
+  }
+  if (event.type === "urge") {
+    const parts = [event.urgency ? `Urgenza ${event.urgency}/5` : "", event.notes ?? ""].filter(Boolean);
+    return parts.join(" - ") || "Stimolo registrato";
   }
   return [event.dose, event.notes].filter(Boolean).join(" - ") || "Assunzione registrata";
 }
@@ -31,6 +41,7 @@ function eventDetail(event: FlowEvent) {
 function eventAccent(type: FlowEvent["type"]) {
   if (type === "water") return "bg-primary text-primary";
   if (type === "urine") return "bg-secondary text-secondary";
+  if (type === "urge") return "bg-secondary-container text-secondary";
   return "bg-tertiary text-tertiary";
 }
 
@@ -38,6 +49,7 @@ export function Dashboard({ events, medications, onQuickWater, onQuickUrine, onQ
   const todayEvents = sortEventsDesc(events.filter((event) => isToday(event.timestamp)));
   const waterTotal = todayEvents.reduce((sum, event) => sum + (event.type === "water" ? event.amountMl ?? 0 : 0), 0);
   const urineCount = todayEvents.filter((event) => event.type === "urine").length;
+  const urgeCount = todayEvents.filter((event) => event.type === "urge").length;
   const plannedMeds = medications.filter((medication) => medication.frequency === "giornaliera");
   const takenMedicationIds = new Set(todayEvents.filter((event) => event.type === "medication").map((event) => event.medicationId));
   const takenCount = plannedMeds.filter((medication) => takenMedicationIds.has(medication.id)).length;
@@ -77,7 +89,7 @@ export function Dashboard({ events, medications, onQuickWater, onQuickUrine, onQ
             </div>
             <div>
               <h3 className="text-headline-md font-semibold">{urineCount} volte</h3>
-              <p className="text-body-md text-on-surface-variant">Frequenza pipì</p>
+              <p className="text-body-md text-on-surface-variant">{urgeCount} stimoli</p>
             </div>
           </section>
 

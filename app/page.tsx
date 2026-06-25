@@ -72,6 +72,10 @@ export default function Home() {
             addEvent({ type: "urine", ...values });
             setQuickModal(null);
           }}
+          onUrge={(values) => {
+            addEvent({ type: "urge", ...values });
+            setQuickModal(null);
+          }}
         />
       </Modal>
 

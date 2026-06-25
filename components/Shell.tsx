@@ -23,7 +23,7 @@ export function Shell({ activeTab, onTabChange, children }: ShellProps) {
     <div className="min-h-dvh bg-background text-on-surface">
       <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between bg-surface px-margin-mobile">
         <div className="flex items-center gap-3">
-          <Icon name="monitoring" className="text-3xl text-primary" />
+          <img src="flowlog-logo.svg" alt="FlowLog" width={40} height={40} className="h-10 w-10 rounded-2xl" />
           <h1 className="text-display-lg-mobile font-bold text-primary">FlowLog</h1>
         </div>
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant">

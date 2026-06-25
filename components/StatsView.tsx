@@ -7,6 +7,7 @@ export function StatsView({ events }: { events: FlowEvent[] }) {
   const days = getLastSevenDaysStats(events);
   const maxWater = Math.max(1000, ...days.map((day) => day.waterMl));
   const maxUrine = Math.max(1, ...days.map((day) => day.urineCount));
+  const maxUrge = Math.max(1, ...days.map((day) => day.urgeCount));
   const avgWater = Math.round(average(days.map((day) => day.waterMl)));
   const avgUrine = average(days.map((day) => day.urineCount)).toFixed(1);
 
@@ -37,6 +38,15 @@ export function StatsView({ events }: { events: FlowEvent[] }) {
         <div className="space-y-3">
           {days.map((day) => (
             <Bar key={day.dateKey} label={shortDate(day.dateKey)} value={String(day.urineCount)} percent={(day.urineCount / maxUrine) * 100} className="bg-secondary-container" />
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-surface-container bg-surface-container-lowest p-lg card-shadow">
+        <h3 className="mb-5 text-title-sm font-semibold">Stimoli “mi scappa”</h3>
+        <div className="space-y-3">
+          {days.map((day) => (
+            <Bar key={day.dateKey} label={shortDate(day.dateKey)} value={String(day.urgeCount)} percent={(day.urgeCount / maxUrge) * 100} className="bg-secondary-container" />
           ))}
         </div>
       </section>

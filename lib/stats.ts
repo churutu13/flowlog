@@ -5,6 +5,7 @@ export type DailyStats = {
   dateKey: string;
   waterMl: number;
   urineCount: number;
+  urgeCount: number;
 };
 
 export function getLastSevenDaysStats(events: FlowEvent[]): DailyStats[] {
@@ -13,7 +14,8 @@ export function getLastSevenDaysStats(events: FlowEvent[]): DailyStats[] {
     return {
       dateKey,
       waterMl: dayEvents.reduce((sum, event) => sum + (event.type === "water" ? event.amountMl ?? 0 : 0), 0),
-      urineCount: dayEvents.filter((event) => event.type === "urine").length
+      urineCount: dayEvents.filter((event) => event.type === "urine").length,
+      urgeCount: dayEvents.filter((event) => event.type === "urge").length
     };
   });
 }
