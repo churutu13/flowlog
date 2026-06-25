@@ -7,16 +7,25 @@ const waterAmounts = [100, 200, 250, 330, 500];
 const urineColors: UrineColor[] = ["chiaro", "giallo", "scuro"];
 
 export function WaterForm({ onSubmit }: { onSubmit: (amountMl: number) => void }) {
-  const [amountMl, setAmountMl] = useState(250);
-  const safeAmountMl = Number.isFinite(amountMl) ? Math.max(1, Math.round(amountMl)) : 250;
+  const [amountMl, setAmountMl] = useState("250");
+  const [error, setError] = useState("");
 
   return (
     <form
       className="space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit(safeAmountMl);
+        const parsedAmount = Number(amountMl);
+
+        if (!amountMl.trim() || !Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+          setError("Inserisci una quantità valida.");
+          return;
+        }
+
+        setError("");
+        onSubmit(Math.round(parsedAmount));
       }}
+      noValidate
     >
       <div>
         <label className="mb-3 block text-label-caps uppercase text-outline">Quantità</label>
@@ -26,20 +35,25 @@ export function WaterForm({ onSubmit }: { onSubmit: (amountMl: number) => void }
             min={1}
             step={10}
             value={amountMl}
-            onChange={(event) => setAmountMl(Number(event.target.value))}
+            inputMode="numeric"
+            onChange={(event) => setAmountMl(event.target.value)}
             className="h-14 w-32 rounded-full border-0 bg-surface-container-low px-5 text-center text-title-sm font-semibold text-primary focus:ring-2 focus:ring-primary-container"
             aria-label="Quantità acqua in millilitri"
           />
           <span className="text-body-md text-on-surface-variant">ml</span>
         </div>
+        {error ? <p className="mb-3 px-base text-sm text-error">{error}</p> : null}
         <div className="grid grid-cols-5 gap-2">
           {waterAmounts.map((amount) => (
             <button
               key={amount}
               type="button"
-              onClick={() => setAmountMl(amount)}
+              onClick={() => {
+                setAmountMl(String(amount));
+                setError("");
+              }}
               className={`h-12 rounded-full text-sm font-semibold ${
-                amountMl === amount ? "bg-primary-container text-on-primary-container" : "bg-surface-container text-on-surface-variant"
+                amountMl === String(amount) ? "bg-primary-container text-on-primary-container" : "bg-surface-container text-on-surface-variant"
               }`}
             >
               {amount}
