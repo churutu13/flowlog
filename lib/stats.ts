@@ -6,16 +6,26 @@ export type DailyStats = {
   waterMl: number;
   urineCount: number;
   urgeCount: number;
+  mlPerUrine: number | null;
+  urgesPerUrine: number | null;
+  unmatchedUrges: number;
 };
 
 export function getLastSevenDaysStats(events: FlowEvent[]): DailyStats[] {
   return lastSevenDateKeys().map((dateKey) => {
     const dayEvents = events.filter((event) => toDateKey(event.timestamp) === dateKey);
+    const waterMl = dayEvents.reduce((sum, event) => sum + (event.type === "water" ? event.amountMl ?? 0 : 0), 0);
+    const urineCount = dayEvents.filter((event) => event.type === "urine").length;
+    const urgeCount = dayEvents.filter((event) => event.type === "urge").length;
+
     return {
       dateKey,
-      waterMl: dayEvents.reduce((sum, event) => sum + (event.type === "water" ? event.amountMl ?? 0 : 0), 0),
-      urineCount: dayEvents.filter((event) => event.type === "urine").length,
-      urgeCount: dayEvents.filter((event) => event.type === "urge").length
+      waterMl,
+      urineCount,
+      urgeCount,
+      mlPerUrine: urineCount > 0 ? waterMl / urineCount : null,
+      urgesPerUrine: urineCount > 0 ? urgeCount / urineCount : null,
+      unmatchedUrges: Math.max(0, urgeCount - urineCount)
     };
   });
 }
