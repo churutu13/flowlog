@@ -16,7 +16,7 @@ export function getLastSevenDaysStats(events: FlowEvent[]): DailyStats[] {
     const dayEvents = events.filter((event) => toDateKey(event.timestamp) === dateKey);
     const waterMl = dayEvents.reduce((sum, event) => sum + (event.type === "water" ? event.amountMl ?? 0 : 0), 0);
     const urineCount = dayEvents.filter((event) => event.type === "urine").length;
-    const urgeCount = dayEvents.filter((event) => event.type === "urge").length;
+    const urgeCount = countEffectiveUrges(dayEvents);
 
     return {
       dateKey,
@@ -28,6 +28,24 @@ export function getLastSevenDaysStats(events: FlowEvent[]): DailyStats[] {
       unmatchedUrges: Math.max(0, urgeCount - urineCount)
     };
   });
+}
+
+export function countEffectiveUrges(events: FlowEvent[]) {
+  let count = 0;
+  let hasOpenUrge = false;
+
+  for (const event of [...events].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())) {
+    if (event.type === "urge" && !hasOpenUrge) {
+      count += 1;
+      hasOpenUrge = true;
+    }
+
+    if (event.type === "urine") {
+      hasOpenUrge = false;
+    }
+  }
+
+  return count;
 }
 
 export function average(values: number[]) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { formatLongDate, formatTime, isToday, sortEventsDesc } from "@/lib/date";
+import { countEffectiveUrges } from "@/lib/stats";
 import type { FlowEvent, Medication } from "@/lib/types";
 import { Icon } from "./Icon";
 
@@ -49,7 +50,7 @@ export function Dashboard({ events, medications, onQuickWater, onQuickUrine, onQ
   const todayEvents = sortEventsDesc(events.filter((event) => isToday(event.timestamp)));
   const waterTotal = todayEvents.reduce((sum, event) => sum + (event.type === "water" ? event.amountMl ?? 0 : 0), 0);
   const urineCount = todayEvents.filter((event) => event.type === "urine").length;
-  const urgeCount = todayEvents.filter((event) => event.type === "urge").length;
+  const urgeCount = countEffectiveUrges(todayEvents);
   const plannedMeds = medications.filter((medication) => medication.frequency === "giornaliera");
   const takenMedicationIds = new Set(todayEvents.filter((event) => event.type === "medication").map((event) => event.medicationId));
   const takenCount = plannedMeds.filter((medication) => takenMedicationIds.has(medication.id)).length;
